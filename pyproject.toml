@@ -1,0 +1,123 @@
+[project]
+name = "snipeit-watcher"
+version = "0.0.1"
+description = "This projects provides a standalone watcher server, which help automte certain snipe-it events."
+authors = [
+    { name = "Matti Kaupenjohann", email = "matti.kaupenjohann@fh-dortmund.de" },
+]
+readme = "README.md"
+keywords = ['python']
+requires-python = ">=3.10,<4.0"
+classifiers = [
+    "Intended Audience :: Developers",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+
+dependencies = [
+    "apprise>=2.0.1",
+    "httpx>=0.28.1",
+    "pydantic[email]>=2.14.1",
+    "pydantic-settings>=2.15.0",
+]
+
+[project.scripts]
+snipeit-watcher = "snipeit_watcher:main"
+
+[project.urls]
+Homepage = "https://makanu.github.io/snipeit-watcher/"
+Repository = "https://github.com/makanu/snipeit-watcher"
+Documentation = "https://makanu.github.io/snipeit-watcher/"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+    "pre-commit>=4.5.1",
+    "tox-uv>=1.33.4",
+    "deptry>=0.25.1",
+    "ty>=0.0.24",
+    "pytest-cov>=7.0.0",
+    "ruff>=0.15.7",
+    "zensical>=0.0.26",
+    "mkdocstrings-python>=1.0.3",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/snipeit_watcher"]
+
+[tool.ty.environment]
+python = "./.venv"
+python-version = "3.10"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 120
+fix = true
+
+[tool.ruff.lint]
+select = [
+    # flake8-2020
+    "YTT",
+    # flake8-bandit
+    "S",
+    # flake8-bugbear
+    "B",
+    # flake8-builtins
+    "A",
+    # flake8-comprehensions
+    "C4",
+    # flake8-debugger
+    "T10",
+    # flake8-simplify
+    "SIM",
+    # isort
+    "I",
+    # mccabe
+    "C90",
+    # pycodestyle
+    "E",
+    "W",
+    # pyflakes
+    "F",
+    # pygrep-hooks
+    "PGH",
+    # pyupgrade
+    "UP",
+    # ruff
+    "RUF",
+    # tryceratops
+    "TRY",
+]
+ignore = [
+    # LineTooLong
+    "E501",
+    # DoNotAssignLambda
+    "E731",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101"]
+
+[tool.ruff.format]
+preview = true
+
+[tool.coverage.report]
+skip_empty = true
+
+[tool.coverage.run]
+branch = true
+source = ["src"]
