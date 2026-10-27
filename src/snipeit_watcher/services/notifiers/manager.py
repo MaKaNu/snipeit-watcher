@@ -1,7 +1,7 @@
 from snipeit_watcher.config import settings
 from snipeit_watcher.models import NotificationPayload
-from snipeit_watcher.notifiers.base import BaseNotifier
-from snipeit_watcher.notifiers.providers import MailNotifier
+from snipeit_watcher.services.notifiers.base import BaseNotifier
+from snipeit_watcher.services.notifiers.providers import MailNotifier
 
 
 class NotificationManager:

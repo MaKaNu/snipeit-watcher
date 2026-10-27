@@ -4,7 +4,7 @@ import apprise
 
 from snipeit_watcher.config import Settings
 from snipeit_watcher.models import NotificationPayload
-from snipeit_watcher.notifiers.base import BaseNotifier
+from snipeit_watcher.services.notifiers.base import BaseNotifier
 
 
 class MailNotifier(BaseNotifier):

@@ -7,10 +7,10 @@ from aiosmtpd.controller import Controller
 
 from snipeit_watcher.config import Settings
 from snipeit_watcher.models import NotificationPayload
-from snipeit_watcher.notifiers import manager as manager_module
-from snipeit_watcher.notifiers import providers
-from snipeit_watcher.notifiers.base import BaseNotifier
-from snipeit_watcher.notifiers.manager import NotificationManager
+from snipeit_watcher.services.notifiers import manager as manager_module
+from snipeit_watcher.services.notifiers import providers
+from snipeit_watcher.services.notifiers.base import BaseNotifier
+from snipeit_watcher.services.notifiers.manager import NotificationManager
 
 PAYLOAD = NotificationPayload(title="t", message="m", recipient="test@example.com")
 
