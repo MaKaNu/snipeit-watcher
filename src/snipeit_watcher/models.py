@@ -22,3 +22,13 @@ class SnipeUsers(BaseModel):
     total_pages: int
     prev_page_url: str | None = None
     next_page_url: str | None = None
+
+    def apply_whitelist(self, whitelist: set[int], invert: bool = False):
+        """Removes users not on whitelist. This can be inverted.
+
+        Args:
+            whitelist (set[int]): List of ids of users.
+            invert (bool, optional): Determines if the function should be inverted. Defaults to False.
+        """
+        self.rows = [user for user in self.rows if (user.id in whitelist) ^ invert]
+        self.total = len(self.rows)
