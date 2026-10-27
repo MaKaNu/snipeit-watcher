@@ -124,3 +124,7 @@ skip_empty = true
 [tool.coverage.run]
 branch = true
 source = ["src"]
+
+[tool.deptry.per_rule_ignores]
+# uvicorn is only used as the server launcher (Dockerfile CMD), never imported
+DEP002 = ["uvicorn"]
