@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     # Snipe-IT Watcher Config
     snipeit_api_token: SecretStr | None = None
     disabled_users_id_whitelist: set[int] = Field(default_factory=set)
+    watcher_interval: int = 5
 
 
 settings = Settings()
