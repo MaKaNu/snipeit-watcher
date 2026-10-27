@@ -31,9 +31,6 @@ dependencies = [
     "uvicorn>=0.54.0",
 ]
 
-[project.scripts]
-snipeit-watcher = "snipeit_watcher.main:main"
-
 [project.urls]
 Homepage = "https://makanu.github.io/snipeit-watcher/"
 Repository = "https://github.com/makanu/snipeit-watcher"
