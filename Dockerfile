@@ -18,4 +18,8 @@ COPY . /app
 # Sync the project
 RUN uv sync --frozen
 
-CMD [ "python", "snipeit_watcher/foo.py" ]
+ENV PATH="/app/.venv/bin:$PATH"
+
+EXPOSE 8000
+
+CMD ["uvicorn", "snipeit_watcher.main:app", "--host", "0.0.0.0", "--port", "8000"]
