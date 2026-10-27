@@ -29,6 +29,7 @@ class SnipeitAPIClient:
         Args:
             method (str): SnipeIT API methods (GET, POST, PATCH, PUT, DEL)
             endpoint (str): Route to the endpoint of the SnipeIT API
+            **kargs: Keyword argument forwared to `httpx.AsyncClient.request` (for example, `params` or `json`)
 
         Returns:
             dict | None: The Json Respnse as dict or None if not available.
@@ -46,12 +47,16 @@ class SnipeitAPIClient:
 
     async def get_disabled_users(self) -> SnipeUsers:
         """Fetch disabled users on snipeit instance"""
-        endpoint = "users?sort=created_at&order=desc&activated=false&all=false"
-        disabled_users = SnipeUsers.model_validate(await self._request("GET", endpoint))
-        disabled_users.rows = [
-            user
-            for user in disabled_users.rows
-            if user.id not in settings.disabled_users_id_whitelist
-        ]
-        disabled_users.total = len(disabled_users.rows)
+        endpoint = "users"
+        params = {
+            "sort": "created_at",
+            "order": "desc",
+            "activated": "false",
+            "all": "false",
+        }
+        disabled_users = SnipeUsers.model_validate(
+            await self._request("GET", endpoint, params=params)
+        )
+        disabled_users.apply_whitelist(settings.disabled_users_id_whitelist, invert=True)
+
         return disabled_users
