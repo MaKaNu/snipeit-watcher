@@ -114,3 +114,13 @@ def test_mail_notifier_delivers_to_smtp_server(smtp_server, smtp_cfg, dummy_payl
     assert [e.rcpt_tos for e in handler.envelopes] == [["to@example.com"], ["two@example.com"]]
     assert handler.envelopes[0].mail_from == "from@example.com"
     assert b"Subject: Hello" in handler.envelopes[0].content
+
+
+def test_mail_notifier_failing_mail_service(smtp_server, smtp_cfg, dummy_payload):
+    _, _ = smtp_server
+    provider = providers.MailNotifier(config=smtp_cfg)
+
+    # Break provider.url intentional to trigger runtime error
+    provider.url = "NOT_SET"
+    with pytest.raises(RuntimeError):
+        asyncio.run(provider.send(dummy_payload))
