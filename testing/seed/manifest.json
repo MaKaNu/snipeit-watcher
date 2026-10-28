@@ -1,0 +1,64 @@
+{
+  "category": "Test Laptops",
+  "manufacturer": "Test Corp",
+  "status_label": "Test Ready to Deploy",
+  "model": "TestBook 14",
+  "default_password": "Test-Passw0rd-123!",
+  "users": [
+    {
+      "username": "alice.active",
+      "first_name": "Alice",
+      "last_name": "Active",
+      "email": "alice.active@example.com",
+      "activated": true
+    },
+    {
+      "username": "bob.disabled",
+      "first_name": "Bob",
+      "last_name": "Disabled",
+      "email": "bob.disabled@example.com",
+      "activated": false
+    },
+    {
+      "username": "carol.disabled",
+      "first_name": "Carol",
+      "last_name": "Disabled",
+      "email": "carol.disabled@example.com",
+      "activated": false
+    },
+    {
+      "username": "dave.disabled.clean",
+      "first_name": "Dave",
+      "last_name": "NoAssets",
+      "email": "dave.disabled.clean@example.com",
+      "activated": false
+    }
+  ],
+  "assets": [
+    {
+      "asset_tag": "TEST-0001",
+      "name": "Alice laptop",
+      "assigned_to": "alice.active"
+    },
+    {
+      "asset_tag": "TEST-0002",
+      "name": "Bob laptop",
+      "assigned_to": "bob.disabled"
+    },
+    {
+      "asset_tag": "TEST-0003",
+      "name": "Bob second laptop",
+      "assigned_to": "bob.disabled"
+    },
+    {
+      "asset_tag": "TEST-0004",
+      "name": "Carol laptop",
+      "assigned_to": "carol.disabled"
+    },
+    {
+      "asset_tag": "TEST-0005",
+      "name": "Spare laptop",
+      "assigned_to": null
+    }
+  ]
+}
