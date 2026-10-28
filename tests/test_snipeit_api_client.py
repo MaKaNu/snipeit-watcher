@@ -54,3 +54,10 @@ async def test_get_disabled_users(api_client, monkeypatch, whitelist, expected_i
     assert isinstance(result, SnipeUsers)
     assert [user.id for user in result.rows] == expected_ids
     assert result.total == len(expected_ids)
+
+
+@pytest.mark.asyncio
+async def test_close_client(api_client):
+    assert api_client._client.is_closed is False
+    await api_client.close()
+    assert api_client._client.is_closed
