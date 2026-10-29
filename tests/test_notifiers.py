@@ -52,6 +52,7 @@ def test_build_manager_registers_mail_only_when_configured(monkeypatch):
     unconfigured = Settings(
         _env_file=None,  # pyright: ignore[reportCallIssue]
         snipeit_api_token="x",  # noqa: S106 pyright
+        mail_host=None,
     )
     monkeypatch.setattr(manager_module, "settings", unconfigured)
     assert manager_module.build_notification_manager()._notifiers == []
