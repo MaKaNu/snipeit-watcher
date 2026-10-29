@@ -10,7 +10,7 @@ class NotificationPayload(BaseModel):
 class SnipeUser(BaseModel):
     id: int
     name: str
-    username: str
+    username: str = ""
     email: EmailStr | None = None
     assets_count: int = 0
 
