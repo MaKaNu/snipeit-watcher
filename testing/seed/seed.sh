@@ -23,7 +23,7 @@ m() { jq -r "$1" "$MANIFEST"; }
 find_id() { # path field value
   for extra in "" "&activated=false"; do
     [ -n "$extra" ] && [ "$1" != users ] && continue
-    id="$(call GET "$1?limit=500$extra" | jq -r --arg v "$3" --arg f "$2" '[.rows[]? | select(.[$f] == $v)][0].id // empty')"
+    id="$(call GET "/$1?limit=500$extra" | jq -r --arg v "$3" --arg f "$2" '[.rows[]? | select(.[$f] == $v)][0].id // empty')"
     [ -n "$id" ] && break
   done
   echo "$id"
