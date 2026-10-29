@@ -16,6 +16,18 @@ def stack_base_url():
     return BASE_URL
 
 
+def test_health_against_stack(stack_base_url):
+    response = httpx.get(f"{stack_base_url}/health", timeout=10.0)
+    response.raise_for_status()
+
+    snipeit_con = response.json().get("status", {}).get("snipeit_con", "")
+    watcher_con = response.json().get("status", {}).get("watcher_con", "")
+
+    assert response.status_code == 200
+    assert snipeit_con == "healthy"
+    assert watcher_con == "healthy"
+
+
 def test_users_disabled_against_stack(stack_base_url):
     response = httpx.post(f"{stack_base_url}/users_disabled", timeout=10.0)
     response.raise_for_status()

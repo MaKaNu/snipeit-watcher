@@ -1,5 +1,6 @@
 from unittest.mock import AsyncMock
 
+import httpx
 import pytest
 from fastapi.testclient import TestClient
 
@@ -29,11 +30,36 @@ def users():
     return users
 
 
-def test_health():
+def test_health_when_snipeit_is_reachable(monkeypatch):
+    request = AsyncMock(return_value={"version": "1.0"})
+    monkeypatch.setattr(route_client, "_request", request)
+
     response = client.get("/health")
 
     assert response.status_code == 200
-    assert response.json() == {"status": "healthy"}
+    assert response.json() == {
+        "status": {
+            "snipeit_con": "healthy",
+            "watcher_con": "healthy",
+        }
+    }
+    request.assert_awaited_once_with("GET", "/version")
+
+
+def test_health_when_snipeit_is_unreachable(monkeypatch):
+    request = AsyncMock(side_effect=httpx.ConnectError("Snipe-IT unavailable"))
+    monkeypatch.setattr(route_client, "_request", request)
+
+    response = client.get("/health")
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "status": {
+            "snipeit_con": "unhealthy Snipe-IT unavailable",
+            "watcher_con": "healthy",
+        }
+    }
+    request.assert_awaited_once_with("GET", "/version")
 
 
 def test_users_disabled(monkeypatch, users):
