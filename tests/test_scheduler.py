@@ -1,7 +1,9 @@
+import asyncio
 import logging
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 from snipeit_watcher import scheduler as scheduler_module
 from snipeit_watcher.models import SnipeUser, SnipeUsers
@@ -41,3 +43,35 @@ async def test_scheduled_watcher_fetches_and_logs_users(monkeypatch, caplog):
 
     get_disabled_users.assert_awaited_once_with()
     assert "Following Users: [(1, 'Example')]" in caplog.text
+
+
+@pytest.mark.asyncio
+async def test_init_scheduler_registers_job_and_starts():
+    try:
+        scheduler_module.init_scheduler()
+        job = scheduler_module.scheduler.get_job("watcher_")
+        assert job
+        assert scheduler_module.scheduler.running
+        assert job.func is scheduler_module.scheduled_watcher
+        assert job.trigger.interval.total_seconds() == scheduler_module.settings.watcher_interval
+    finally:
+        scheduler_module.scheduler.shutdown(wait=False)
+
+
+@pytest.mark.asyncio
+async def test_job_fires(monkeypatch):
+    monkeypatch.setattr(scheduler_module.settings, "watcher_interval", 0.05)
+    fired = asyncio.Event()
+
+    async def fake():
+        fired.set()
+
+    monkeypatch.setattr(
+        scheduler_module, "scheduled_watcher", fake
+    )  # patched before init_scheduler
+    monkeypatch.setattr(scheduler_module, "scheduler", AsyncIOScheduler())
+    scheduler_module.init_scheduler()
+    try:
+        await asyncio.wait_for(fired.wait(), timeout=1)
+    finally:
+        scheduler_module.scheduler.shutdown(wait=False)
