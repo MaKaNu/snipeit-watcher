@@ -1,0 +1,167 @@
+# NEVER USE THIS FILE IN PRODUCTION. IT IS FOR LOCAL TESTING ONLY.
+
+# Local testing stack: Snipe-IT + MariaDB + MailHog + snipeit-watcher.
+#
+#   docker compose -f docker-compose-testing.yml up -d --build
+#
+# Everything is provisioned automatically:
+#   - keygen:            creates throwaway Passport keys in testing/.keys
+#   - snipeit-bootstrap: creates settings, admin user (admin / admin-Passw0rd-123!) and an API token
+#   - snipeit-seed:      creates dummy users/assets from testing/seed/manifest.json via the REST API
+#   - snipeit-watcher:   starts with the generated token
+# All outgoing mail (Snipe-IT and watcher) shows up in MailHog: http://localhost:8025
+#
+# The APP_KEY below is for testing only. Never use it in production.
+
+x-snipeit-env: &snipeit-env
+  APP_ENV: production
+  APP_DEBUG: "false"
+  APP_KEY: base64:dGVzdGluZy1vbmx5LWtleS0wMTIzNDU2Nzg5YWJjZGU=
+  APP_URL: http://localhost:8080
+  APP_TIMEZONE: Europe/Berlin
+  DB_CONNECTION: mysql
+  MYSQL_PORT_3306_TCP_ADDR: db
+  MYSQL_PORT_3306_TCP_PORT: 3306
+  MYSQL_DATABASE: snipeit
+  MYSQL_USER: snipeit
+  MYSQL_PASSWORD: snipeit
+  MAIL_DRIVER: smtp
+  MAIL_HOST: mailhog
+  MAIL_PORT_587_TCP_ADDR: mailhog
+  MAIL_PORT_587_TCP_PORT: 1025
+  MAIL_PORT: 1025
+  MAIL_ENV_ENCRYPTION: ""
+  MAIL_ENCRYPTION: "null"
+  MAIL_USERNAME: ""
+  MAIL_PASSWORD: ""
+  MAIL_FROM_ADDR: snipeit@example.com
+  MAIL_FROM_NAME: Snipe-IT
+  MAIL_REPLYTO_ADDR: snipeit@example.com
+  MAIL_REPLYTO_NAME: Snipe-IT
+
+services:
+  db:
+    image: mariadb:11
+    container_name: snipeit-test-db
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: snipeit
+      MYSQL_USER: snipeit
+      MYSQL_PASSWORD: snipeit
+    volumes:
+      - db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: snipeit-test-mailhog
+    ports:
+      - "8025:8025" # web UI
+      - "1025:1025" # SMTP
+
+  keygen:
+    image: alpine:3
+    container_name: snipeit-test-keygen
+    command:
+      - sh
+      - -c
+      - |
+        apk add --no-cache openssl >/dev/null
+        [ -s /keys/oauth-private.key ] || {
+          openssl genrsa -out /keys/oauth-private.key 4096
+          openssl rsa -in /keys/oauth-private.key -pubout -out /keys/oauth-public.key
+        }
+        chmod 644 /keys/*.key
+    volumes:
+      - ./testing/.keys:/keys
+
+  snipeit:
+    image: snipe/snipe-it:latest
+    container_name: snipeit-test
+    depends_on:
+      db:
+        condition: service_healthy
+      mailhog:
+        condition: service_started
+      keygen:
+        condition: service_completed_successfully
+    ports:
+      - "8080:80"
+    environment: *snipeit-env
+    volumes:
+      - snipeit-data:/var/lib/snipeit
+      - ./testing/.keys/oauth-private.key:/var/www/html/storage/oauth-private.key:ro
+      - ./testing/.keys/oauth-public.key:/var/www/html/storage/oauth-public.key:ro
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fs http://localhost/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
+  snipeit-bootstrap:
+    image: snipe/snipe-it:latest
+    container_name: snipeit-test-bootstrap
+    depends_on:
+      snipeit:
+        condition: service_healthy
+    environment: *snipeit-env
+    entrypoint:
+      - sh
+      - -c
+      - cd /var/www/html && php artisan tinker --execute="require '/seed/bootstrap.php';" && test -s /shared/token
+    volumes:
+      - ./testing/seed:/seed:ro
+      - ./testing/.keys/oauth-private.key:/var/www/html/storage/oauth-private.key:ro
+      - ./testing/.keys/oauth-public.key:/var/www/html/storage/oauth-public.key:ro
+      - shared:/shared
+    restart: "no"
+
+  snipeit-seed:
+    image: alpine:3
+    container_name: snipeit-test-seed
+    depends_on:
+      snipeit-bootstrap:
+        condition: service_completed_successfully
+    environment:
+      SNIPEIT_URL: http://snipeit
+    command: ["sh", "/seed/seed.sh"]
+    volumes:
+      - ./testing/seed:/seed:ro
+      - shared:/shared:ro
+    restart: "no"
+
+  snipeit-watcher:
+    build: .
+    container_name: snipeit-watcher-test
+    depends_on:
+      snipeit-seed:
+        condition: service_completed_successfully
+      mailhog:
+        condition: service_started
+    ports:
+      - "8000:8000"
+    environment:
+      LOG_LEVEL: debug
+      APP_URL: http://snipeit
+      WATCHER_INTERVAL: 30
+      DISABLED_USERS_ID_WHITELIST: "[]"
+      MAIL_HOST: mailhog
+      MAIL_PORT: 1025
+      MAIL_FROM_ADDR: watcher@example.com
+      MAIL_FROM_NAME: Snipe-IT Watcher
+    command:
+      - sh
+      - -c
+      - SNIPEIT_API_TOKEN="$$(cat /shared/token)" exec uvicorn snipeit_watcher.main:app --host 0.0.0.0 --port 8000
+    volumes:
+      - shared:/shared:ro
+
+volumes:
+  db-data:
+  snipeit-data:
+  shared:

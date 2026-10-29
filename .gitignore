@@ -214,4 +214,4 @@ __marimo__/
 # Local Testlabs
 test_apprise.py
 test_snipeit_api.py
-testing/.keys/*
+testing/.keys/

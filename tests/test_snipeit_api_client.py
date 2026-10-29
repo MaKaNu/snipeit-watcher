@@ -1,3 +1,4 @@
+import httpx
 import pytest
 import respx
 
@@ -54,3 +55,38 @@ async def test_get_disabled_users(api_client, monkeypatch, whitelist, expected_i
     assert isinstance(result, SnipeUsers)
     assert [user.id for user in result.rows] == expected_ids
     assert result.total == len(expected_ids)
+
+
+@pytest.mark.asyncio
+async def test_close_client(api_client):
+    assert api_client._client.is_closed is False
+    await api_client.close()
+    assert api_client._client.is_closed
+
+
+@pytest.mark.asyncio
+@respx.mock
+async def test_request_reraises_http_status_error(api_client):
+    route = respx.get(f"{api_client.base_url}api/v1/users").respond(
+        status_code=503,
+        text="Service unavailable",
+    )
+
+    with pytest.raises(httpx.HTTPStatusError) as exc_info:
+        await api_client._request("GET", "users")
+
+    assert route.called
+    assert exc_info.value.response.status_code == 503
+
+
+@pytest.mark.asyncio
+@respx.mock
+async def test_request_reraises_network_error(api_client):
+    route = respx.get(f"{api_client.base_url}api/v1/users").mock(
+        side_effect=httpx.ConnectError("Network unavailable")
+    )
+
+    with pytest.raises(httpx.ConnectError, match="Network unavailable"):
+        await api_client._request("GET", "users")
+
+    assert route.called

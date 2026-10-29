@@ -50,6 +50,7 @@ dev = [
     "aiosmtpd>=1.4.6",
     "pytest-asyncio>=1.4.1",
     "respx>=0.23.1",
+    "httpx2>=2.14.0",
 ]
 
 [build-system]

@@ -96,6 +96,21 @@ Now, validate that all unit tests are passing:
 make test
 ```
 
+We provide a fully integration test setup for local testing.
+Ensure you have docker installation ready.
+
+```bash
+docker compose -f docker-compose-testing.yml up --build
+```
+
+This will launch a fully working snipeit instance with dummy data preseeded.
+The intergration tests setup needs to be fully disassembled on changes:
+
+```bash
+docker compose -f docker-compose-testing.yml down -v
+```
+
+
 9. Before raising a pull request you should also run tox.
    This will run the tests across different versions of Python:
 
