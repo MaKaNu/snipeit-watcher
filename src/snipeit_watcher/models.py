@@ -33,3 +33,20 @@ class SnipeUsers(BaseModel):
         """
         self.rows = [user for user in self.rows if (user.id in whitelist) ^ invert]
         self.total = len(self.rows)
+
+
+class SnipeItem(BaseModel):
+    id: int
+    name: str
+    type: str
+
+
+class SnipeAsset(BaseModel):
+    id: int
+    name: str
+    asset_tag: str
+
+
+class SnipeAssets(BaseModel):
+    total: int
+    rows: list[SnipeAsset]
