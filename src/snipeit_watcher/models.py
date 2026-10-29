@@ -50,3 +50,19 @@ class SnipeAsset(BaseModel):
 class SnipeAssets(BaseModel):
     total: int
     rows: list[SnipeAsset]
+
+
+class SnipeHistory(BaseModel):
+    id: int
+    created_by: SnipeUser
+    action_type: str
+    item: SnipeItem
+
+
+class SnipeHistories(BaseModel):
+    total: int
+    rows: list[SnipeHistory]
+
+    def by_action(self, action_type: str):
+        self.rows = [hist for hist in self.rows if hist.action_type == action_type]
+        self.total = len(self.rows)
