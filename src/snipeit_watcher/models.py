@@ -45,6 +45,7 @@ class SnipeAsset(BaseModel):
     id: int
     name: str
     asset_tag: str
+    assigned_to: SnipeUser | None = None
 
 
 class SnipeAssets(BaseModel):
