@@ -67,3 +67,8 @@ class SnipeHistories(BaseModel):
     def by_action(self, action_type: str):
         self.rows = [hist for hist in self.rows if hist.action_type == action_type]
         self.total = len(self.rows)
+
+
+class AssetManager(BaseModel):
+    asset_manager_id: SnipeUser
+    assets: list[SnipeAsset]
