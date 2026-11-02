@@ -61,17 +61,8 @@ class SnipeitAPIClient:
 
         return disabled_users
 
-    # TODO: Move logic to schedule
-    async def analyze_disabled_users(self):
-        """Checks if disabled users have assets and reacts."""
-        users = await self.get_disabled_users()
-        managers_by_id: dict[int, AssetManager] = {}
-        for user in users.rows:
-            if user.assets_count > 0:
-                await self.get_asset_managers(user, managers_by_id)
-            else:
-                pass  # delete_user
-        return list(managers_by_id.values())
+    async def get_user(self, user_id: int) -> SnipeUser:
+        return SnipeUser.model_validate(await self._request("GET", f"users/{user_id}"))
 
     async def get_user_assets(self, user_id: int) -> SnipeAssets:
         endpoint = f"users/{user_id}/assets"
