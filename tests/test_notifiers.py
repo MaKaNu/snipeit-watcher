@@ -44,7 +44,7 @@ def test_mail_notifier_uses_mocked_apprise(monkeypatch):
     notifier = providers.MailNotifier(config=cfg)
     asyncio.run(notifier.send(PAYLOAD))
     assert "mailto://localhost:25" in fake_ap.add.call_args.args[0]
-    fake_ap.notify.assert_called_once_with(body="m", title="t")
+    fake_ap.notify.assert_called_once_with(body="m", title="t", body_format="text")
 
 
 def test_build_manager_registers_mail_only_when_configured(monkeypatch):
