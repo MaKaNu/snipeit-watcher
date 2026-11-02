@@ -100,12 +100,13 @@ class SnipeitAPIClient:
             # Since we already sorted via api request we know that
             # the first entry of histories is always the latest checkout.
             # Actually we hope this is true. XDXDXDXD
-            manager = histories.rows[0].created_by
-            if manager.id not in managers_by_id:
-                managers_by_id[manager.id] = AssetManager(
-                    asset_manager_id=manager,
+            manager_id = histories.rows[0].created_by.id
+            if manager_id not in managers_by_id:
+                # History's created_by lacks email, so fetch the full user once.
+                managers_by_id[manager_id] = AssetManager(
+                    asset_manager=await self.get_user(manager_id),
                     assets=[],
                 )
-            managers_by_id[manager.id].assets.append(asset)
+            managers_by_id[manager_id].assets.append(asset)
 
         return managers_by_id
