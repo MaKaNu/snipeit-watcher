@@ -16,10 +16,10 @@ def test_init_scheduler_registers_and_starts_job(monkeypatch):
     scheduler_module.init_scheduler()
 
     scheduler.add_job.assert_called_once_with(
-        scheduler_module.scheduled_watcher,
+        scheduler_module.scheduled_analyze_disabled_users,
         "interval",
         seconds=scheduler_module.settings.watcher_interval,
-        id="watcher_",
+        id="watcher_analyze_disabled_users",
         replace_existing=True,
     )
     scheduler.start.assert_called_once_with()
@@ -49,10 +49,10 @@ async def test_scheduled_watcher_fetches_and_logs_users(monkeypatch, caplog):
 async def test_init_scheduler_registers_job_and_starts():
     try:
         scheduler_module.init_scheduler()
-        job = scheduler_module.scheduler.get_job("watcher_")
+        job = scheduler_module.scheduler.get_job("watcher_analyze_disabled_users")
         assert job
         assert scheduler_module.scheduler.running
-        assert job.func is scheduler_module.scheduled_watcher
+        assert job.func is scheduler_module.scheduled_analyze_disabled_users
         assert job.trigger.interval.total_seconds() == scheduler_module.settings.watcher_interval
     finally:
         scheduler_module.scheduler.shutdown(wait=False)
@@ -67,7 +67,7 @@ async def test_job_fires(monkeypatch):
         fired.set()
 
     monkeypatch.setattr(
-        scheduler_module, "scheduled_watcher", fake
+        scheduler_module, "scheduled_analyze_disabled_users", fake
     )  # patched before init_scheduler
     monkeypatch.setattr(scheduler_module, "scheduler", AsyncIOScheduler())
     scheduler_module.init_scheduler()
