@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>System Notification</title>
+  <!--[if mso]>
+  <noscript>
+    <xml>
+      <o:OfficeDocumentSettings>
+        <o:PixelsPerInch>96</o:PixelsPerInch>
+      </o:OfficeDocumentSettings>
+    </xml>
+  </noscript>
+  <![endif]-->
+  <style>
+    /* Reset styles */
+    body,
+    table,
+    td,
+    a {
+      -webkit-text-size-adjust: 100%;
+      -ms-text-size-adjust: 100%;
+    }
+
+    table,
+    td {
+      mso-table-lspace: 0pt;
+      mso-table-rspace: 0pt;
+    }
+
+    img {
+      -ms-interpolation-mode: bicubic;
+      border: 0;
+      height: auto;
+      line-height: 100%;
+      outline: none;
+      text-decoration: none;
+    }
+
+    /* CRITICAL FIX: Use separate border collapse so border-radius renders properly without clipping artifacts */
+    table {
+      border-collapse: separate !important;
+    }
+
+    body {
+      height: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      width: 100% !important;
+      background-color: #f4f6f9;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      color: #1e293b;
+    }
+
+    /* Dark Mode Support */
+    @media (prefers-color-scheme: dark) {
+
+      body,
+      .bg-body {
+        background-color: #0f172a !important;
+      }
+
+      .bg-card {
+        background-color: #1e293b !important;
+        border-color: #334155 !important;
+      }
+
+      .text-primary {
+        color: #f8fafc !important;
+      }
+
+      .text-secondary {
+        color: #94a3b8 !important;
+      }
+
+      .text-muted {
+        color: #64748b !important;
+      }
+
+      .table-header {
+        background-color: #334155 !important;
+        color: #e2e8f0 !important;
+      }
+
+      .table-row {
+        border-bottom-color: #334155 !important;
+      }
+    }
+
+    /* Responsive Styles */
+    @media screen and (max-width: 600px) {
+      .container {
+        width: 100% !important;
+        padding: 12px !important;
+      }
+
+      .mobile-padding {
+        padding: 20px !important;
+      }
+    }
+  </style>
+</head>
+
+<body class="bg-body" style="margin: 0; padding: 0; background-color: #f4f6f9;">
+
+  <!-- Outer Container -->
+  <table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation">
+    <tr>
+      <td align="center" style="padding: 40px 10px;" class="bg-body">
+
+        <!-- Main Email Card -->
+        <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;" class="container"
+          role="presentation">
+
+          <!-- Header / Branding -->
+          <tr>
+            <td align="left" style="padding: 0 0 24px 0;">
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation">
+                <tr>
+                  <td align="left" style="font-size: 20px; font-weight: 700; color: #0f172a;" class="text-primary">
+                    <span style="color: #6366f1;">Snipe-IT</span> Watcher
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Content Card Wrapper -->
+          <tr>
+            <td class="bg-card mobile-padding"
+              style="background-color: #ffffff; border-radius: 12px; padding: 32px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); overflow: hidden;">
+
+              <!-- Subject / Title -->
+              <h1 class="text-primary"
+                style="margin: 0 0 12px 0; font-size: 22px; font-weight: 700; color: #0f172a; line-height: 1.3;">
+                Found login disabled users with assets
+              </h1>
+
+              <!-- Subtitle / Intro Description -->
+              <p>Hello Assetmanager {{ manager.asset_manager.name }}, </p>
+              <p class="text-secondary" style="margin: 0 0 24px 0; font-size: 15px; line-height: 1.6; color: #475569;">
+                You lended in the past the following assets to following users which are current disabled.
+                Please contact those users and clear missing assets.
+              </p>
+
+              <!-- Asset Summary Table -->
+              <h3 class="text-primary" style="margin: 0 0 12px 0; font-size: 16px; font-weight: 600; color: #1e293b;">
+                Checkedout Assets
+              </h3>
+
+              <table border="0" cellpadding="0" cellspacing="0" width="100%"
+                style="margin-bottom: 24px; border-collapse: collapse !important;" role="presentation">
+                <thead>
+                  <tr class="table-header" style="background-color: #f1f5f9; text-align: left;">
+                    <th
+                      style="padding: 10px 12px; font-size: 12px; font-weight: 600; color: #475569; border-top-left-radius: 6px; border-bottom-left-radius: 6px;">
+                      Asset</th>
+                    <th
+                      style="padding: 10px 12px; font-size: 10px; font-weight: 600; color: #475569; border-top-left-radius: 6px;">
+                      Id</th>
+                    <th
+                      style="padding: 10px 12px; font-size: 10px; font-weight: 600; color: #475569; border-top-left-radius: 6px;">
+                      Asset Tag</th>
+                    <th
+                      style="padding: 10px 12px; font-size: 12px; font-weight: 600; color: #475569; border-top-left-radius: 6px;">
+                      User</th>
+                    <th
+                      style="padding: 10px 12px; font-size: 10px; font-weight: 600; color: #475569; border-top-left-radius: 6px;">
+                      User Id</th>
+                    <th
+                      style="padding: 10px 12px; font-size: 10px; font-weight: 600; color: #475569; border-top-left-radius: 6px;">
+                      Username</th>
+                    <th
+                      style="padding: 10px 12px; font-size: 10px; font-weight: 600; color: #475569; border-top-right-radius: 6px; border-bottom-right-radius: 6px;">
+                      Email</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for asset in assets %}
+                  <!-- Table Row {{ loop.index }} -->
+                  <tr class="table-row" style="border-bottom: 1px solid #f1f5f9;">
+                    <td style="padding: 12px; font-size: 14px; color: #334155;" class="text-primary">{{ asset.name }}</td>
+                    <td style="padding: 12px; font-size: 14px; color: #64748b;" class="text-secondary">{{ asset.id }}</td>
+                    <td style="padding: 12px; font-size: 14px; color: #64748b;" class="text-secondary">{{ asset.asset_tag }}</td>
+                    <td style="padding: 12px; font-size: 14px; color: #334155;" class="text-primary">{{ asset.assigned_to.name }}</td>
+                    <td style="padding: 12px; font-size: 14px; color: #64748b;" class="text-secondary">{{ asset.assigned_to.id }}</td>
+                    <td style="padding: 12px; font-size: 14px; color: #64748b;" class="text-secondary">{{ asset.assigned_to.username }}</td>
+                    <td style="padding: 12px; font-size: 14px; color: #64748b;" class="text-secondary">{{ asset.assigned_to.email }}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+
+              <!-- Call to Action Button -->
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation"
+                style="margin-bottom: 24px;">
+                <tr>
+                  <td align="center">
+                    <a href="{{ snipeit_url }}" target="_blank"
+                      style="background-color: #6366f1; color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 600; padding: 12px 24px; border-radius: 8px; display: inline-block; box-shadow: 0 2px 4px rgba(99, 102, 241, 0.2);">
+                      Open Snipe-IT Dashboard →
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td align="center" style="padding: 24px 0 0 0;">
+              <p class="text-muted" style="margin: 0 0 6px 0; font-size: 12px; color: #94a3b8;">
+                This automated notification was generated by <strong>Snipe-IT Watcher</strong>.
+              </p>
+            </td>
+          </tr>
+
+        </table>
+
+      </td>
+    </tr>
+  </table>
+
+</body>
+
+</html>
