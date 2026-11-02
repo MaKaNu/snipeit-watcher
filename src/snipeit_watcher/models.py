@@ -10,7 +10,7 @@ class NotificationPayload(BaseModel):
     body_format: Literal["text", "html"] = "text"
 
 
-class SnipeUser(BaseModel, frozen=True):
+class SnipeUser(BaseModel):
     id: int
     name: str
     username: str = ""
@@ -44,11 +44,14 @@ class SnipeItem(BaseModel, frozen=True):
     type: str
 
 
-class SnipeAsset(BaseModel, frozen=True):
+class SnipeAsset(BaseModel):
     id: int
     name: str
     asset_tag: str
     assigned_to: SnipeUser | None = None
+
+    def __hash__(self):
+        return hash((self.id, self.name, self.asset_tag))
 
 
 class SnipeAssets(BaseModel):
