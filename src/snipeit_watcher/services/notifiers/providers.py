@@ -21,4 +21,9 @@ class MailNotifier(BaseNotifier):
         ap = apprise.Apprise()
         if not ap.add(self.url + f"&to={quote(str(payload.recipient))}"):
             raise RuntimeError(f"Invalid notification URL for {payload.recipient}")  # noqa: TRY003
-        return ap.notify(body=payload.message, title=payload.title)
+        body_format = (
+            apprise.NotifyFormat.HTML
+            if payload.body_format == "html"
+            else apprise.NotifyFormat.TEXT
+        )
+        return ap.notify(body=payload.message, title=payload.title, body_format=body_format)
