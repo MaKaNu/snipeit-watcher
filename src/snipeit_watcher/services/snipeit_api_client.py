@@ -64,6 +64,10 @@ class SnipeitAPIClient:
     async def get_user(self, user_id: int) -> SnipeUser:
         return SnipeUser.model_validate(await self._request("GET", f"users/{user_id}"))
 
+    async def del_user(self, user: SnipeUser) -> None:
+        logger.info(f"Deleting User {user.name=} with {user.id=}")
+        await self._request("DELETE", f"users/{user.id}")
+
     async def get_user_assets(self, user_id: int) -> SnipeAssets:
         endpoint = f"users/{user_id}/assets"
         user_assets = SnipeAssets.model_validate(await self._request("GET", endpoint))

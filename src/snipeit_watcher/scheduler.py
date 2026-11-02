@@ -31,7 +31,7 @@ async def scheduled_analyze_disabled_users():
         if user.assets_count > 0:
             await client.get_asset_managers(user, managers_by_id)
         else:
-            pass  # delete_user
+            await client.del_user(user)
             continue
 
     for manager in managers_by_id.values():
