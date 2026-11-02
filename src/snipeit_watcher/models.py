@@ -73,5 +73,5 @@ class SnipeHistories(BaseModel):
 
 
 class AssetManager(BaseModel):
-    asset_manager_id: SnipeUser
+    asset_manager: SnipeUser
     assets: list[SnipeAsset]
