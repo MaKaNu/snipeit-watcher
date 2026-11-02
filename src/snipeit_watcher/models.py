@@ -75,3 +75,6 @@ class SnipeHistories(BaseModel):
 class AssetManager(BaseModel):
     asset_manager: SnipeUser
     assets: list[SnipeAsset]
+
+    def __hash__(self) -> int:
+        return hash(tuple(self.assets))
