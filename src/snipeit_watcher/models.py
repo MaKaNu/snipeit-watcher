@@ -10,7 +10,7 @@ class NotificationPayload(BaseModel):
     body_format: Literal["text", "html"] = "text"
 
 
-class SnipeUser(BaseModel):
+class SnipeUser(BaseModel, frozen=True):
     id: int
     name: str
     username: str = ""
@@ -38,13 +38,13 @@ class SnipeUsers(BaseModel):
         self.total = len(self.rows)
 
 
-class SnipeItem(BaseModel):
+class SnipeItem(BaseModel, frozen=True):
     id: int
     name: str
     type: str
 
 
-class SnipeAsset(BaseModel):
+class SnipeAsset(BaseModel, frozen=True):
     id: int
     name: str
     asset_tag: str
@@ -56,7 +56,7 @@ class SnipeAssets(BaseModel):
     rows: list[SnipeAsset]
 
 
-class SnipeHistory(BaseModel):
+class SnipeHistory(BaseModel, frozen=True):
     id: int
     created_by: SnipeUser
     action_type: str
