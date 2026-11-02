@@ -1,3 +1,5 @@
+from typing import Literal
+
 from pydantic import BaseModel, EmailStr
 
 
@@ -5,6 +7,7 @@ class NotificationPayload(BaseModel):
     title: str
     message: str
     recipient: EmailStr | None = None
+    body_format: Literal["text", "html"] = "text"
 
 
 class SnipeUser(BaseModel):
