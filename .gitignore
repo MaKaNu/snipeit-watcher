@@ -215,3 +215,4 @@ __marimo__/
 test_apprise.py
 test_snipeit_api.py
 testing/.keys/
+.env.bak
