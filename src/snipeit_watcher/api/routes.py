@@ -16,9 +16,10 @@ async def health_check():
         version = await client._request("GET", "/version")
         logger.debug(version)
     except Exception as e:
+        logger.exception("Health check failed while calling Snipe-IT API: %s", e)
         return {
             "status": {
-                "snipeit_con": f"unhealthy {e}",
+                "snipeit_con": "unhealthy",
                 "watcher_con": "healthy",
             }
         }
