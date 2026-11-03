@@ -21,11 +21,6 @@ class SnipeUser(BaseModel):
 class SnipeUsers(BaseModel):
     total: int
     rows: list[SnipeUser]
-    current_page: int
-    per_page: int
-    total_pages: int
-    prev_page_url: str | None = None
-    next_page_url: str | None = None
 
     def apply_whitelist(self, whitelist: set[int], invert: bool = False):
         """Removes users not on whitelist. This can be inverted.
