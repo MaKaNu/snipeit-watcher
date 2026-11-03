@@ -1,8 +1,5 @@
 import logging
 
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
-
-from snipeit_watcher.config import settings
 from snipeit_watcher.models import AssetManager
 from snipeit_watcher.services.notifiers.manager import build_notification_manager
 from snipeit_watcher.services.notifiers.payload import create_payload
@@ -14,13 +11,7 @@ from snipeit_watcher.services.snipeit_api_client import SnipeitAPIClient
 
 logger = logging.getLogger(__name__)
 client = SnipeitAPIClient()
-scheduler = AsyncIOScheduler()
 notification_manager = build_notification_manager()
-
-
-async def scheduled_watcher():
-    users = await client.get_disabled_users()
-    logger.info(f"Following Users: {[(user.id, user.name) for user in users.rows]}")
 
 
 async def scheduled_analyze_disabled_users():
@@ -40,14 +31,3 @@ async def scheduled_analyze_disabled_users():
         store_asset_manager(manager)
         payload = create_payload(manager)
         await notification_manager.notify_all(payload)
-
-
-def init_scheduler():
-    scheduler.add_job(
-        scheduled_analyze_disabled_users,
-        "interval",
-        seconds=settings.watcher_interval,
-        id="watcher_analyze_disabled_users",
-        replace_existing=True,
-    )
-    scheduler.start()
