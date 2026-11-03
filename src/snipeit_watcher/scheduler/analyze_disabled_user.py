@@ -1,0 +1,33 @@
+import logging
+
+from snipeit_watcher.models import AssetManager
+from snipeit_watcher.services.notifiers.manager import build_notification_manager
+from snipeit_watcher.services.notifiers.payload import create_payload
+from snipeit_watcher.services.persistence.stores import (
+    is_asset_manager_updated,
+    store_asset_manager,
+)
+from snipeit_watcher.services.snipeit_api_client import SnipeitAPIClient
+
+logger = logging.getLogger(__name__)
+client = SnipeitAPIClient()
+notification_manager = build_notification_manager()
+
+
+async def scheduled_analyze_disabled_users():
+    """Checks if disabled users have assets and reacts."""
+    users = await client.get_disabled_users()
+    managers_by_id: dict[int, AssetManager] = {}
+    for user in users.rows:
+        if user.assets_count > 0:
+            await client.get_asset_managers(user, managers_by_id)
+        else:
+            await client.del_user(user)
+            continue
+
+    for manager in managers_by_id.values():
+        if not is_asset_manager_updated(manager):
+            continue
+        store_asset_manager(manager)
+        payload = create_payload(manager)
+        await notification_manager.notify_all(payload)

@@ -5,7 +5,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from snipeit_watcher.api.routes import router
-from snipeit_watcher.scheduler import init_scheduler, scheduler
+from snipeit_watcher.scheduler import init_scheduler
 
 logging.basicConfig(
     level=os.getenv("LOG_LEVEL", "INFO").upper(),
@@ -15,7 +15,7 @@ logging.basicConfig(
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    init_scheduler()
+    scheduler = init_scheduler()
     yield
     scheduler.shutdown()
 

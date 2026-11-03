@@ -44,7 +44,7 @@ def test_mail_notifier_uses_mocked_apprise(monkeypatch):
     notifier = providers.MailNotifier(config=cfg)
     asyncio.run(notifier.send(PAYLOAD))
     assert "mailto://localhost:25" in fake_ap.add.call_args.args[0]
-    fake_ap.notify.assert_called_once_with(body="m", title="t")
+    fake_ap.notify.assert_called_once_with(body="m", title="t", body_format="text")
 
 
 def test_build_manager_registers_mail_only_when_configured(monkeypatch):
@@ -52,6 +52,7 @@ def test_build_manager_registers_mail_only_when_configured(monkeypatch):
     unconfigured = Settings(
         _env_file=None,  # pyright: ignore[reportCallIssue]
         snipeit_api_token="x",  # noqa: S106 pyright
+        mail_host=None,
     )
     monkeypatch.setattr(manager_module, "settings", unconfigured)
     assert manager_module.build_notification_manager()._notifiers == []

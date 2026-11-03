@@ -1,5 +1,9 @@
+from pathlib import Path
+
 from pydantic import EmailStr, Field, HttpUrl, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+from snipeit_watcher.types import StoreType
 
 
 class Settings(BaseSettings):
@@ -18,6 +22,8 @@ class Settings(BaseSettings):
     snipeit_api_token: SecretStr | None = None
     disabled_users_id_whitelist: set[int] = Field(default_factory=set)
     watcher_interval: int = 5
+    store: StoreType = StoreType("file")
+    store_path: Path = Path(".snipeit-watcher-persistent")
 
 
 settings = Settings()

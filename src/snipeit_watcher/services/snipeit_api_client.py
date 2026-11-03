@@ -3,7 +3,7 @@ import logging
 import httpx
 
 from snipeit_watcher.config import settings
-from snipeit_watcher.models import SnipeUsers
+from snipeit_watcher.models import AssetManager, SnipeAssets, SnipeHistories, SnipeUser, SnipeUsers
 
 logger = logging.getLogger(__name__)
 
@@ -60,3 +60,57 @@ class SnipeitAPIClient:
         disabled_users.apply_whitelist(settings.disabled_users_id_whitelist, invert=True)
 
         return disabled_users
+
+    async def get_user(self, user_id: int) -> SnipeUser:
+        return SnipeUser.model_validate(await self._request("GET", f"users/{user_id}"))
+
+    async def del_user(self, user: SnipeUser) -> None:
+        logger.info(f"Deleting User {user.name=} with {user.id=}")
+        await self._request("DELETE", f"users/{user.id}")
+
+    async def get_user_assets(self, user_id: int) -> SnipeAssets:
+        endpoint = f"users/{user_id}/assets"
+        user_assets = SnipeAssets.model_validate(await self._request("GET", endpoint))
+        return user_assets
+
+    async def get_histories(self, asset_id):
+        endpoint = f"hardware/{asset_id}/history"
+        params = {"sort": "created_at", "order": "desc"}
+        histories = SnipeHistories.model_validate(
+            await self._request("GET", endpoint, params=params)
+        )
+        histories.by_action("checkout")
+
+        return histories
+
+    async def get_asset_managers(
+        self, user: SnipeUser, managers_by_id: dict[int, AssetManager] | None = None
+    ) -> dict[int, AssetManager]:
+        """Group a user's assets by the manager who last checked them out.
+
+        Pass `managers_by_id` to accumulate results across several users.
+        """
+        user_assets = await self.get_user_assets(user.id)
+
+        if managers_by_id is None:
+            managers_by_id = {}
+        for asset in user_assets.rows:
+            # users/{id}/assets omits assigned_to, but the owner is known here.
+            asset.assigned_to = user
+            histories = await self.get_histories(asset.id)
+            if not histories.rows:
+                continue
+
+            # Since we already sorted via api request we know that
+            # the first entry of histories is always the latest checkout.
+            # Actually we hope this is true. XDXDXDXD
+            manager_id = histories.rows[0].created_by.id
+            if manager_id not in managers_by_id:
+                # History's created_by lacks email, so fetch the full user once.
+                managers_by_id[manager_id] = AssetManager(
+                    asset_manager=await self.get_user(manager_id),
+                    assets=[],
+                )
+            managers_by_id[manager_id].assets.append(asset)
+
+        return managers_by_id
