@@ -35,7 +35,7 @@ def test_health_when_snipeit_is_unreachable(monkeypatch):
     assert response.status_code == 200
     assert response.json() == {
         "status": {
-            "snipeit_con": "unhealthy Snipe-IT unavailable",
+            "snipeit_con": "unhealthy",
             "watcher_con": "healthy",
         }
     }
