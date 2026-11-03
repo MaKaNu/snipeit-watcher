@@ -216,3 +216,4 @@ test_apprise.py
 test_snipeit_api.py
 testing/.keys/
 .env.bak
+__s3_dict__/
