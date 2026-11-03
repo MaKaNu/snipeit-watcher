@@ -2,7 +2,7 @@ from jinja2 import Environment, PackageLoader, select_autoescape
 from multipledispatch import dispatch
 
 from snipeit_watcher.config import settings
-from snipeit_watcher.models import AssetManager, NotificationPayload, SnipeAsset, SnipeUser
+from snipeit_watcher.models import AssetManager, NotificationPayload
 
 _env = Environment(
     loader=PackageLoader("snipeit_watcher", "templates"),
@@ -27,20 +27,3 @@ def create_payload(data: AssetManager):
         recipient=data.asset_manager.email,
         body_format="html",
     )
-
-
-if __name__ == "__main__":
-    manager_user = SnipeUser(id=1, name="Piet", username="pietbro", email="pietbro@example.com")
-    user_1 = SnipeUser(id=2, name="Carol", username="carolbot", email="carolbot@example.com")
-    user_2 = SnipeUser(id=3, name="Tobi", username="tobitobsen", email="tobitobsen@example.com")
-    assets = [
-        SnipeAsset(id=1, name="NewAsset", asset_tag="asset_001", assigned_to=user_1),
-        SnipeAsset(id=2, name="NewAsset 2", asset_tag="asset_002", assigned_to=user_2),
-    ]
-    manager = AssetManager(asset_manager=manager_user, assets=assets)
-
-    payload = create_payload(manager)
-
-    print(payload.title)
-    print(payload.message)
-    print(payload.recipient)
